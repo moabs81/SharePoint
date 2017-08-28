@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- the following 5 js files are required to use CSOM -->
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <!--<script type="text/javascript" src="/_layouts/15/init.js"></script>-        
+	<script type="text/javascript" src="/_layouts/15/sp.core.js"></script>    -->
+	<script type="text/javascript" src="/_layouts/MicrosoftAjax.js"></script>
+	<script type="text/javascript" src="/_layouts/15/sp.runtime.js"></script>
+    <script type="text/javascript" src="/_layouts/15/sp.js"></script>
+	<script type="text/javascript" src="/_layouts/15/SP.UserProfiles.js"></script>
+</head>
+<body>
+    <span id="resultsSpan"></span>
+ 
+    <!-- include your app code -->
+    <script type='text/javascript'>
+		$(document).ready(function(){
+			$("#resultsSpan").html("Hi we're here!");
+			
+			var clientContext;
+			var web;
+			var userProp;
+			var targetUser = "NCSECU\\";
+			var baseUri = _spPageContextInfo.webAbsoluteUrl;			
+			
+			function getUserName(callback){
+				$.ajax({
+					url : baseUri + "/_api/web/getuserbyid(" + _spPageContextInfo.userId + ")",
+					contentType : "application/json",
+					headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
+					success : function(data){														
+							console.log("-----");
+						console.log("spPageContextInfo.userId");
+						console.log(data);
+						console.log("-----");
+						callback(data);
+					},
+					error : function(err){
+						console.log("Could not get e-mail - " + JSON.stringify(err));
+						
+					}
+				});			
+			};
+			
+			function preReqs(){
+				clientContext = SP.ClientContext.get_current();				
+				web=clientContext.get_web();
+				//SP.SOD.executeOrDelayUntilScriptLoaded(getUserProperties,'SP.UserProfiles.js');
+				console.log(clientContext);
+				console.log(web);
+			};
+			function getUser(){				
+				var clientContext = new SP.ClientContext.get_current();
+				var peopleManager = new SP.UserProfiles.PeopleManager(clientContext);
+				console.log(peopleManager);
+				userProp = peopleManager.getPropertiesFor("NCSECU\\S22307N");
+				console.log(userProp);
+				clientContext.load(userProp);
+				clientContext.executeQueryAsync(onRequestSuccess, onRequestFail);
+				function onRequestSuccess(){
+					console.log(userProp.get_userProfileProperties());
+					console.log(userProp.get_userProfileProperties()["Title"]);
+				}
+				function onRequestFail(sender, args){
+					console.log(args.get_message());
+				}
+			}
+			preReqs();
+			getUserName(function(result){
+				targetUser += result;
+				console.log(result);
+				getUser();
+			})
+		});
+	</script> 
+</body>
+</html>

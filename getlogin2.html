@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html> 
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<span id="name2"></span>	
+	<script type="text/javascript">
+		$(document).ready(function(){					
+			var _REQUESTDIGEST;
+			var baseUri = _spPageContextInfo.webAbsoluteUrl;			
+			var To;
+			var From;
+			var Body = "This is a test e-mail body.";
+			var Subject = "This is a test e-mail subject.";			
+			
+			
+			var getUser = $.ajax({
+						url : baseUri + "/_api/web/getuserbyid(" + _spPageContextInfo.userId + ")",
+						contentType : "application/json",
+						headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
+						success : function(data){							
+							getContextInfo(data);
+						},
+						error : function(err){
+							console.log("Could not get e-mail - " + JSON.stringify(err));
+						}
+			});
+			
+			function getContextInfo(data){
+				To = data.d.Email;
+				From = data.d.Email;
+				console.log(To);
+				console.log(From);
+				$.ajax({										
+					url : baseUri + "/_api/contextinfo",
+					contentType : "application/json",
+					method : "POST",
+					headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
+					success : function(data){						
+						sendEmail(data);
+					},
+					error : function(err){
+						console.log("context error - " + JSON.stringify(err));
+					}			
+				});
+			};				
+			function sendEmail(data,_REQUESTDIGEST){				
+				var emailData = JSON.stringify({
+					"properties" : {
+						"__metadata" : {"type":"SP.Utilities.EmailProperties"},
+						"From": From,
+						"To" : To,
+						"Body" : Body,
+						"Subject" : Subject
+					}
+				});
+				_REQUESTDIGEST = data.d.GetContextWebInformation.FormDigestValue;
+				console.log(_REQUESTDIGEST);
+				$.ajax({
+					url : baseUri + "/_api/SP.Utilities.Utility.SendEmail",
+					contentType : "application/json; odata=verbose",
+					method : "POST",
+					data : emailData,
+					headers : {"ACCEPT" : "application/json; odata=verbose","content-type" : "application/json; odata=verbose","X-RequestDigest" : _REQUESTDIGEST},
+					success : function(data){
+						console.log("Email sent");
+					},
+					error: function(err){					
+						console.log("Email DID NOT SEND");					
+						console.log(err);
+					}
+				});
+			};
+		});
+	</script>	
+</html>

@@ -1,0 +1,30 @@
+<html>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>	
+	<span id="name"></span>	
+	<script type="text/javascript">
+		var loginName = "";
+		var userID = _spPageContextInfo.userId;
+		//GetCurrentUser();	
+		function GetCurrentUser(){
+			var requestUri = _spPageContextInfo.webAbsoluteUrl + "/_api/web/getuserbyid(" + userID + ")";
+			var requestHeaders = { "accept" : "application/json;odata=verbose" };	
+			$.ajax({
+				url : requestUri,
+				contentType : "application/json;odata:verbose",
+				headers : requestHeaders,
+				success : onSuccess,
+				error : onError
+			});
+		};
+		function onSuccess(data, request){
+			var allData=data
+			//console.log(request);
+			//console.log(data);
+			var loginName=data.d.Title;	
+			document.getElementById("name").innerHTML = "Hello, " + loginName;
+		};
+		function onError(error){
+			alert(error);
+		}
+		</script>
+		<script type="text/javascript">$(document).ready(GetCurrentUser())</script>

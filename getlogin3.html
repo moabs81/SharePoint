@@ -1,0 +1,83 @@
+<html>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<span id="name2"></span>	
+	<script type="text/javascript">
+		$(document).ready(function(){		
+			var _REQUESTDIGEST;
+			var baseUri = _spPageContextInfo.webAbsoluteUrl;			
+			var To;
+			var From;
+			var Body = "This is a test e-mail body.";
+			var Subject = "This is a test e-mail subject.";
+			
+			var contextInfo = $.ajax({
+				url : baseUri + "/_api/contextinfo",
+				contentType : "application/json",
+				method : "POST",
+				headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
+				success : function(data){
+					_REQUESTDIGEST = data.d.GetContextWebInformation.FormDigestValue;
+					console.log("_REQUESTDIGEST From within contextInfo: " + _REQUESTDIGEST);
+					console.log(data);
+					return _REQUESTDIGEST;
+					getUser(data, _REQUESTDIGEST);					
+				},
+				error : function(err){
+					console.log("context error - " + JSON.stringify(err));
+					return "NOTHING";
+				}			
+			});
+			console.log("---------");
+			console.log(contextInfo);
+			//console.log(contextInfo.responseText);
+			console.log("---------");
+			function getUser(data,_REQUESTDIGEST){
+					console.log("_REQUESTDIGEST From within getUser:"  + _REQUESTDIGEST);
+					$.ajax({
+						url : baseUri + "/_api/web/getuserbyid(" + _spPageContextInfo.userId + ")",
+						contentType : "application/json",
+						headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
+						success : function(data){
+							//var newRequestDigest = data.d.GetContextWebInformation.FormDigestValue;
+							//console.log("newRequestDigest From within getUser: " + newRequestDigest);
+							console.log(data);							
+							//sendEmail(data,newRequestDigest);
+						},
+						error : function(err){
+							console.log("Could not get e-mail - " + JSON.stringify(err));
+						}
+					});
+				};
+			function sendEmail(data,_REQUESTDIGEST){
+				console.log("_REQUESTDIGEST from within sendEmail: " + _REQUESTDIGEST);
+				console.log(data);				
+				To = data.d.Email;
+				From = data.d.Email;
+				$.ajax({
+					url : baseUri + "/_api/SP.Utilities.Utility.SendEmail",
+					contentType : "application/json",
+					method : "POST",
+					data : JSON.stringify({
+							'properties': {
+								'__metadata': {
+									'type': 'SP.Utilities.EmailProperties'
+								},
+								'From' : From,
+								'To' : To,
+								'Body' : Body,
+								'Subject' : Subject
+							}
+					}),
+					headers : {"Accept" : "application/json; odata=verbose","content-type" : "application/json; odata=verbose","X-RequestDigest" : _REQUESTDIGEST},
+					success : function(data){
+						console.log("Email sent");
+					},
+					error: function(err){					
+						console.log("Email DID NOT SEND");					
+						console.log(err);
+					}
+				});
+			};
+		});
+	</script>	
+</html>

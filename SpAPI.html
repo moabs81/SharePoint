@@ -1,0 +1,95 @@
+<html>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<span id="resultSpan">placeholder</span>	
+	<script type="text/javascript">
+		$(document).ready(function(){			
+			var baseUri = _spPageContextInfo.webAbsoluteUrl;			
+			var emailContent = [];						
+			function getRequestDigest(callback){
+				var _REQUESTDIGEST;
+				$.ajax({
+					url : baseUri + "/_api/contextinfo",
+					contentType : "application/json",
+					method : "POST",
+					headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
+					success : function(data){
+						console.log("-----");
+						console.log("contextInfoData");
+						console.log(data);						
+						_REQUESTDIGEST = data.d.GetContextWebInformation.FormDigestValue;						
+						callback(_REQUESTDIGEST);						
+					},
+					error : function(err){
+						console.log("context error - " + JSON.stringify(err));						
+					}
+				});				
+			};
+			
+			function getUserName(callback){
+				$.ajax({
+					url : baseUri + "/_api/web/getuserbyid(" + _spPageContextInfo.userId + ")",
+					contentType : "application/json",
+					headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
+					success : function(data){														
+							console.log("-----");
+						console.log("spPageContextInfo.userId");
+						console.log(data);
+						console.log("-----");
+						callback(data);
+					},
+					error : function(err){
+						console.log("Could not get e-mail - " + JSON.stringify(err));
+						
+					}
+				});			
+			};
+			
+			function sendEmail(callback){				
+			    console.log(emailContent);				
+				$.ajax({
+					url : baseUri + "/_api/SP.Utilities.Utility.SendEmail",
+					contentType : "application/json",
+					method : "POST",
+					headers : {"Accept" : "application/json; odata=verbose","content-type" : "application/json; odata=verbose","X-RequestDigest" : emailContent[0]},
+					data : JSON.stringify({
+							'properties': {
+								'__metadata': {
+									'type': 'SP.Utilities.EmailProperties'
+								},
+								'From' : emailContent[1],
+								'To' : { 'results' : [emailContent[1]]},
+								'Body' : emailContent[2],
+								'Subject' : emailContent[3]
+							}
+					}),					
+					success : function(data){
+						callback("SUCCESS!");
+					},
+					error: function(err){					
+						console.log("Email DID NOT SEND");					
+						console.log(err);
+					}
+				});			
+			};
+			
+			getRequestDigest(function(result){				
+				emailContent[0] = result;
+				
+				getUserName(function(result){				
+					$("#resultSpan").html(result.d.Title);
+					emailContent[1] = result.d.Email;				
+					emailContent[2] = result.d.Title;
+					emailContent[3] = "Test Email";
+
+					sendEmail(function(result){
+						console.log(result);				
+					});			
+			
+				});
+			
+			});
+			
+			
+		});		
+	</script>	
+</html>

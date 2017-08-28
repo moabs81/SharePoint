@@ -1,0 +1,54 @@
+<html>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<span id="resultSpan">placeholder</span>	
+	<script type="text/javascript">
+		$(document).ready(function(){			
+			var baseUri = _spPageContextInfo.webAbsoluteUrl;			
+			
+			function getRequestDigest(callback){
+				var _REQUESTDIGEST;
+				$.ajax({
+					url : baseUri + "/_api/contextinfo",
+					contentType : "application/json",
+					method : "POST",
+					headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
+					success : function(data){
+						console.log("-----");
+						console.log("contextInfoData");
+						console.log(data);
+						_REQUESTDIGEST = data.d.GetContextWebInformation.FormDigestValue;						
+						callback(_REQUESTDIGEST);						
+					},
+					error : function(err){
+						console.log("context error - " + JSON.stringify(err));						
+					}
+				});				
+			};
+			
+			function getUserName(callback){
+				$.ajax({
+					url : baseUri + "/_api/web/getuserbyid(" + _spPageContextInfo.userId + ")",
+					contentType : "application/json",
+					headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
+					success : function(data){														
+						console.log("-----");
+						console.log("spPageContextInfo.userId");
+						console.log(data);
+						console.log("-----");
+						callback(data);
+					},
+					error : function(err){
+						console.log("Could not get e-mail - " + JSON.stringify(err));
+						
+					}
+				});			
+			};			
+			
+			getRequestDigest(function(result){								
+				getUserName(function(result){
+					$("#resultSpan").html(result.d.Title);					
+					});						
+				});
+			});		
+	</script>	
+</html>
