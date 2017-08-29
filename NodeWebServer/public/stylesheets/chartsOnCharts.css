@@ -1,0 +1,15 @@
+#targetSpan{
+	color: #080186;
+	font-weight: bold;
+}
+.chartDivs{    
+	display: flex;
+}
+#myChart1{	
+	float: left;
+	width: 400px;
+}
+#myChart2{	
+	float: left;
+	width: 400px;
+}

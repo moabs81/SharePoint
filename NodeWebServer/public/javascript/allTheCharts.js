@@ -57,4 +57,55 @@ $(document).ready(function () {
         }
 
     });
+	var ctx = document.getElementById("myChart2").getContext('2d');
+    var thisChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: [
+                labels[6],
+				labels[0],
+                labels[1],
+                labels[2],
+                labels[3],
+                labels[4],
+                labels[5]                
+            ],
+            datasets: [{
+                data: [
+                    datapoints[6],
+					datapoints[0],
+                    datapoints[1],
+                    datapoints[2],
+                    datapoints[3],
+                    datapoints[4],
+                    datapoints[5]                    
+                ],
+                backgroundColor: [
+                    colors[6],
+					colors[0],
+                    colors[1],
+                    colors[2],
+                    colors[3],
+                    colors[4],
+                    colors[5]                    
+                ],
+                borderColor: [
+                    colors[6],
+					colors[0],
+                    colors[1],
+                    colors[2],
+                    colors[3],
+                    colors[4],
+                    colors[5]                    
+                ]
+            }]
+        },
+        options: {
+            animation: {
+                animateRotate: true,
+                animateScale: true
+            }
+        }
+
+    });
 })
