@@ -1,18 +1,39 @@
 <!DOCTYPE html>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <style>
+	/*keyframe for menu fade*/
+	@-webkit-keyframes fadeMenuIn {
+		from {background-color: rgba(255,255,255,0.0);}
+		to {background-color: rgba(59,60,64,1.0);}
+	}
+	@-moz-keyframes fadeMenuIn {
+		from {background-color: rgba(255,255,255,0.0);}
+		to {background-color: rgba(59,60,64,1.0);}
+	}	
+	@-o-keyframes fadeMenuIn {
+		from {background-color: rgba(255,255,255,0.0);}
+		to {background-color: rgba(59,60,64,1.0);}
+	}	
+	@keyframes fadeMenuIn{
+		from {background-color: rgba(255,255,255,0.0);}
+		to {background-color: rgba(59,60,64,1.0);}
+	}
+	
+	
 	/*add background image*/
 	body.ms-backgroundImage{
-		background: url("https://tsps.ncsecu.local/Style%20Library/Images/subtleBackground.jpg");
+		/*background: url("https://tsps.ncsecu.local/Style%20Library/Images/subtleBackground.jpg");*/
 	}
 	
 	/*make top menus transparent*/
 	#O365_NavHeader, .ms-cui-topBar2{
-		display: none;
-		background-color: transparent !important;
+		display: none;		
 	}
 	#suiteBarTop{
 		height: 0px !important;
+	}
+	#globalNavBox{		
+		display:none;
 	}
 	#globalNavBox, .ms-core-overlay{		
 		background: transparent;
@@ -26,6 +47,43 @@
 		color: #444 !important;
 	}
 	
+	/*fix the remaining menu*/
+	#s4-titlerow{
+		background-color: rgba(255,255,255,0.0) !important;
+		position: fixed;
+		border-color: rgba(0,0,0,0.0);
+		z-index: 1001;				
+	}
+	.menuSolid{
+		-webkit-animation: fadeMenuIn 0.4s forwards; 
+			-moz-animation: fadeMenuIn 0.4s forwards; 
+				-o-animation: fadeMenuIn 0.4s forwards; 
+					animation: fadeMenuIn 0.4s forwards; 			
+	}	
+	.static, .ms-core-pageTitle{
+		color: #FFFFFF !important;		
+	}	
+	.selected{
+		font-weight: bold;
+	}	
+	#branchImageContainer{
+		position: relative;
+		width: 100%;
+		height: 450px;		
+	}
+	#branchImage{
+		background-image: url('https://tsps.ncsecu.local/Style%20Library/Images/SECU_DurhamLowesGrove.jpg');		
+		position: fixed;
+		width: 100%;
+		height: 450px;
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position: center center;		
+		z-index: -1;
+	}
+	#contentRow{		
+		background-color: #ffffff;		
+	}
 	.o365cs-nav-leftAlign{
 		background-image: url("https://tsps.ncsecu.local/Style%20Library/Images/CULogo%20transparent.png");
 		background-repeat: no-repeat;
@@ -43,13 +101,15 @@
 <script type="text/javascript">	
 	
 	$(document).ready(function(){		
-		$("#s4-titlerow").scroll(function(){
-			if($(this).scrollTop()<1){
-				$("#suiteBarDelta, #s4-ribbonrow, #s4-titlerow").addClass("goneButNotForgotten");
+		$("#contentRow").before('<div id="branchImageContainer"><div id="branchImage"></div></div>');		
+		$("#s4-workspace").on('scroll', function(){
+			if($("#contentRow").offset().top <175){				
+				$("#s4-titlerow").addClass("menuSolid");				
 			} else{
-				$("#suiteBarDelta, #s4-ribbonrow, #s4-titlerow").removeClass("goneButNotForgotten");
-			}
+				$("#s4-titlerow").removeClass("menuSolid");				
+			};
 		});
+		
 		console.log("Hi dude");
 	});
 </script>
