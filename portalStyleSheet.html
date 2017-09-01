@@ -1,76 +1,76 @@
 <!DOCTYPE html>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<style>
-	/*keyframe for menu fade*/
-	@-webkit-keyframes fadeMenuIn {
-		from {background-color: rgba(255,255,255,0.0);}
-		to {background-color: rgba(59,60,64,1.0);}
+<style>		
+	/*make top menus invisible*/
+	#suiteBarDelta{
+		display:none;
 	}
-	@-moz-keyframes fadeMenuIn {
-		from {background-color: rgba(255,255,255,0.0);}
-		to {background-color: rgba(59,60,64,1.0);}
-	}	
-	@-o-keyframes fadeMenuIn {
-		from {background-color: rgba(255,255,255,0.0);}
-		to {background-color: rgba(59,60,64,1.0);}
-	}	
-	@keyframes fadeMenuIn{
-		from {background-color: rgba(255,255,255,0.0);}
-		to {background-color: rgba(59,60,64,1.0);}
-	}
-	
-	
-	/*add background image*/
-	body.ms-backgroundImage{
-		/*background: url("https://tsps.ncsecu.local/Style%20Library/Images/subtleBackground.jpg");*/
-	}
-	
-	/*make top menus transparent*/
-	#O365_NavHeader, .ms-cui-topBar2{
+	#O365_NavHeader, .ms-cui-topBar2, #globalNavBox{
 		display: none;		
 	}
 	#suiteBarTop{
 		height: 0px !important;
 	}
-	#globalNavBox{		
-		display:none;
-	}
-	#globalNavBox, .ms-core-overlay{		
-		background: transparent;
-	}	
 	/*hide bottom border of last menu*/
 	.ms-cui-topBar2{		
 		border-bottom: 0px;
 	}
-	/*match text color of top menu bar to rest of site*/
-	.o365cs-topnavText, .ms-fcl-w{
-		color: #444 !important;
-	}
-	
-	/*fix the remaining menu*/
-	#s4-titlerow{
+	/*.ms-core-overlay is the opaque background under the content. hide this*/
+	#globalNavBox, .ms-core-overlay{		
 		background-color: rgba(255,255,255,0.0) !important;
-		position: fixed;
-		border-color: rgba(0,0,0,0.0);
-		z-index: 1001;				
 	}
-	.menuSolid{
-		-webkit-animation: fadeMenuIn 0.4s forwards; 
-			-moz-animation: fadeMenuIn 0.4s forwards; 
-				-o-animation: fadeMenuIn 0.4s forwards; 
-					animation: fadeMenuIn 0.4s forwards; 			
+	/*fix the remaining menu*/	
+	/*#s4-workspace{
+		overflow: visible;
+	}
+	.s4-titlerow-wrap{
+		position: fixed;		
+		z-index: 100;
+	}*/
+	#s4-titlerow{		
+		position: absolute;		
+		background-color: rgba(255,255,255,0.0) !important;
+		border-color: rgba(0,0,0,0.0);
+		z-index: 1001;		
+		transition: background-color 0.4s; 
+		-webkit-transition: background-color 0.4s;
+		-moz-transition: background-color 0.4s;
+		-o-transition: background-color 0.4s;
 	}	
-	.static, .ms-core-pageTitle{
+	/*change color of text etc. in remaining top menu to white*/
+	.static, .ms-core-pageTitle, .ms-navedit-editLinksIcon, .ms-verticalAlignMiddle, #pageTitle a{
 		color: #FFFFFF !important;		
 	}	
+	/*change background of content container to white*/
+	#contentRow{		
+		background-color: #ffffff;
+	}
+	/*menu faded in*/
+	#s4-titlerow.menuSolid{
+		background-color: rgba(59,60,64,1.0) !important;		
+	}		
+	/*change color of input box text and input box border to white*/
+	input{
+		color: #FFFFFF !important;
+	}	
+	.ms-srch-sb{
+		border-color: #FFFFFF !important;
+	}
+	/* weight the text of the current page in the menu*/
 	.selected{
 		font-weight: bold;
-	}	
+	}
+	.mouseOver{
+		letter-spacing: 1px;
+	}
+	
+	/*style the relative div that contains the branch image to allow the content under to scroll*/
 	#branchImageContainer{
 		position: relative;
 		width: 100%;
 		height: 450px;		
 	}
+	/* fix the actual image to make it sweet*/
 	#branchImage{
 		background-image: url('https://tsps.ncsecu.local/Style%20Library/Images/SECU_DurhamLowesGrove.jpg');		
 		position: fixed;
@@ -81,35 +81,93 @@
 		background-position: center center;		
 		z-index: -1;
 	}
-	#contentRow{		
-		background-color: #ffffff;		
+	.whichUser{				
 	}
-	.o365cs-nav-leftAlign{
-		background-image: url("https://tsps.ncsecu.local/Style%20Library/Images/CULogo%20transparent.png");
-		background-repeat: no-repeat;
-		background-position: center;
-		display: inline-block;
-	}
-	/*hide "Sharepoint, Sites"*/
-	#O365_MainLink_NavMenu,.o365cs-nav-brandingText,#Sites_BrandBar{
-		visibility: hidden;
-	}
-	
+	.currentUserClass{
+		color: #FFFFFF;
+	}	
 </style>
 
 
 <script type="text/javascript">	
 	
 	$(document).ready(function(){		
-		$("#contentRow").before('<div id="branchImageContainer"><div id="branchImage"></div></div>');		
+		//yes, we're here.
+		console.log("Hi dude, this is cool.");
+		
+		//add branch image divs immediately above the contentrow container. this should really be done on the page rather than through script.
+		$("#contentRow").before('<div id="branchImageContainer"><div id="branchImage"></div></div>');
+		//add a landing div above search to place the current user's name
+		$("#DeltaPlaceHolderSearchArea").prepend('<div class="whichUser"></div>');
+		//add fixed div to menu as part of creating horizontal scrolling
+		$("#s4-titlerow").wrap('<div class="s4-titlerow-wrap"></div>');
+		
+		//$("#s4-titlerow").attr("style","width: " + ($("#s4-titlerow").width() + "px"));
+		
+		//detect scroll position of contentrow container relative to the top menu to condition class
 		$("#s4-workspace").on('scroll', function(){
-			if($("#contentRow").offset().top <175){				
+			if($("#contentRow").offset().top <225){				
 				$("#s4-titlerow").addClass("menuSolid");				
 			} else{
 				$("#s4-titlerow").removeClass("menuSolid");				
 			};
 		});
 		
-		console.log("Hi dude");
+		//detect hover of top menu links to condition class
+		$(".static.menu-item").hover(
+			function(){
+				$(this).addClass("mouseOver");
+			}, function(){
+				$(this).removeClass("mouseOver");
+			}
+		);
+		//GET USER*********************************************************************************************************
+		var baseUri = _spPageContextInfo.webAbsoluteUrl;			
+			
+		function getRequestDigest(callback){
+			var _REQUESTDIGEST;
+			$.ajax({
+				url : baseUri + "/_api/contextinfo",
+				contentType : "application/json",
+				method : "POST",
+				headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
+				success : function(data){
+					console.log("-----");
+					console.log("contextInfoData");
+					console.log(data);
+					_REQUESTDIGEST = data.d.GetContextWebInformation.FormDigestValue;						
+					callback(_REQUESTDIGEST);						
+				},
+				error : function(err){
+					console.log("context error - " + JSON.stringify(err));						
+				}
+			});				
+		};
+			
+		function getUserName(callback){
+			$.ajax({
+				url : baseUri + "/_api/web/getuserbyid(" + _spPageContextInfo.userId + ")",
+				contentType : "application/json",
+				headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
+				success : function(data){														
+					console.log("-----");
+					console.log("spPageContextInfo.userId");
+					console.log(data);
+					console.log("-----");
+					callback(data);
+				},
+				error : function(err){
+					console.log("Could not get e-mail - " + JSON.stringify(err));						
+				}
+			});			
+		};			
+			
+		getRequestDigest(function(result){								
+			getUserName(function(result){				
+				var currentUser = result.d.Title;				
+				$(".whichUser").html('<span class="currentUserClass">' + currentUser + '</span>');
+			});						
+		});		
+		
 	});
 </script>
