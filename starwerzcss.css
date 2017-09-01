@@ -1,0 +1,130 @@
+/* WEB FONTS
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+ 
+/* Google Web Fonts are free.  https://www.google.com/fonts  */
+@import url('https://fonts.googleapis.com/css?family=Ropa+Sans');
+ 
+/* Font Awesome is a free font. http://fontawesome.io  */
+@import url('http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+ 
+ 
+/* LAYOUT  & OVERALL PAGE
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+ 
+/* Hide unnecessary page elements */
+    #suiteBarLeft,  /*Suite Bar Left (SharePoint text and links) */
+    #ms-help,  /* Help icon  */
+    #fullscreenmodebox,  /* Focus on Content icon */
+    #siteIcon img,  /* Image set as SharePoint site logo in Settings */
+    #s4-workspace .ms-listMenu-editLink, /* Edit links when managed navigation is in use */
+    #pageTitle /* Page title */ {
+        display: none;
+    }
+    #RibbonContainer-TabRowRight /* Share, Follow, Edit links */ {
+        display: none !important; /* !important needed to override SharePoint inline style */
+    }
+ 
+/* Add background images & color - warning these images will not scroll with the page */
+    body.ms-backgroundImage {
+        background: 
+            url("http://classcdn.s3.amazonaws.com/images/starfield-left.jpg") left 0 repeat-y, 
+            url("http://classcdn.s3.amazonaws.com/images/starfield-right.jpg") right 0 repeat-y,
+            #151515;  /* Must list background color last */
+    }
+ 
+/* Remove OOTB color overlay added by SharePoint */
+    .ms-core-overlay {
+        background: transparent;
+    }
+ 
+/* Content area wrap, child of s4-workspace */
+    #s4-bodyContainer {
+        padding-bottom: 0;
+        position: relative;
+    }
+ 
+/* Content area wrap, child of s4-bodyContainer */
+    #contentRow {
+        padding-top: 0;
+    }
+ 
+/* Content area wrap, child of contentRow */
+    #contentBox {
+        margin: 50px auto 0; 
+        max-width: 1200px;  /* Fixed width */
+    }
+ 
+/* Quick launch wrap */
+    #sideNavBox {
+        float: none;
+        margin: 50px 0 0;
+        width: 100%;
+        background: #1A1A1A url('http://classcdn.s3.amazonaws.com/images/vader.jpg') center no-repeat;
+        min-height: 272px;
+    }
+ 
+/* ---- Sticky footer effect via flexbox---- */
+ 
+/* Parent 1 */
+    #s4-workspace {
+        display: flex;
+        flex-direction: column;
+    }
+ 
+/* Child 1 (Parent 1); Parent 2 */
+    #s4-bodyContainer {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+ 
+/* Child 1 (Parent 2), Parent 3 */
+    #contentRow {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+ 
+/* Child 1 (Parent 3) */
+    #contentBox {
+        order: 1;
+        flex-grow: 2;
+    }
+ 
+/* Child 2 (Parent 3) */
+    #sideNavBox {
+        order: 2;
+        flex-grow: 1;
+    }
+ 
+ 
+/* SHARED FONT PROPERTIES
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+ 
+/* Sans-serif */
+    .ms-core-listMenu-horizontalBox ul.root li.static > a, /* Nav items */
+    .ms-core-listMenu-horizontalBox ul.root li.static > a:link, /* Nav items */
+    .ms-core-listMenu-horizontalBox ul.root li.static > a:visited, /* Nav items */
+    .ms-srch-sb input, /* Search input */
+    #sideNavBox p, /* Quick launch plain text */
+    .ms-core-listMenu-verticalBox li.static .ms-core-listMenu-item, /* Quick launch nav items */
+    .film-selector, /* In-page nav */
+    .ms-webpart-chrome-title .ms-webpart-titleText, /* Web part title text */
+    .ms-webpart-chrome-title .ms-webpart-titleText a, /* Web part title text */
+    .ms-webpart-chrome-title .ms-webpart-titleText a:link, /* Web part title text */
+    .ms-webpart-chrome-title .ms-webpart-titleText a:visited, /* Web part title text */
+    .r1-tix-promo h1 /* Rogue One promo box */ {
+        font-family: 'Ropa Sans',Helvetica,Arial,sans-serif;
+    }
+ 
+ 
+/* SHARED TRANSITION PROPERTIES
+-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- */
+ 
+/* 8 second ease */
+    .ms-siteicon-a, /* Site logo */
+    .ms-mpSearchBox.ms-floatRight, /* Search box placement */
+    nav[class*="social"] ul li a:before, /* Social networking links */
+    .social-1 ul li:last-child /* Last link in top social networking links */ {
+        transition: all 0.8s ease;
+    }

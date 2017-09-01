@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<style>
+	/*add background image*/
+	body.ms-backgroundImage{
+		background: url("https://tsps.ncsecu.local/Style%20Library/Images/subtleBackground.jpg");
+	}
+	
+	/*make top menus transparent*/
+	#O365_NavHeader, .ms-cui-topBar2{
+		display: none;
+		background-color: transparent !important;
+	}
+	#suiteBarTop{
+		height: 0px !important;
+	}
+	#globalNavBox, .ms-core-overlay{		
+		background: transparent;
+	}	
+	/*hide bottom border of last menu*/
+	.ms-cui-topBar2{		
+		border-bottom: 0px;
+	}
+	/*match text color of top menu bar to rest of site*/
+	.o365cs-topnavText, .ms-fcl-w{
+		color: #444 !important;
+	}
+	
+	.o365cs-nav-leftAlign{
+		background-image: url("https://tsps.ncsecu.local/Style%20Library/Images/CULogo%20transparent.png");
+		background-repeat: no-repeat;
+		background-position: center;
+		display: inline-block;
+	}
+	/*hide "Sharepoint, Sites"*/
+	#O365_MainLink_NavMenu,.o365cs-nav-brandingText,#Sites_BrandBar{
+		visibility: hidden;
+	}
+	
+</style>
+
+
+<script type="text/javascript">	
+	
+	$(document).ready(function(){		
+		$("#s4-titlerow").scroll(function(){
+			if($(this).scrollTop()<1){
+				$("#suiteBarDelta, #s4-ribbonrow, #s4-titlerow").addClass("goneButNotForgotten");
+			} else{
+				$("#suiteBarDelta, #s4-ribbonrow, #s4-titlerow").removeClass("goneButNotForgotten");
+			}
+		});
+		console.log("Hi dude");
+	});
+</script>
