@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<style>		
-	/*make top menus invisible*/
-	#suiteBarDelta{
+<style id = "allCustomStyles">		
+	/*make top menus invisible
+	#suiteBarDelta, #globalNavBox{
+		display: none;		
+	}*/
+	.topBarHidden{
 		display:none;
 	}
-	#O365_NavHeader, .ms-cui-topBar2, #globalNavBox{
-		display: none;		
-	}
-	#suiteBarTop{
+	/*#suiteBarTop{
 		height: 0px !important;
-	}
+	}*/
 	/*hide bottom border of last menu*/
 	.ms-cui-topBar2{		
 		border-bottom: 0px;
@@ -28,19 +28,28 @@
 		z-index: 100;
 	}*/
 	#s4-titlerow{		
-		position: absolute;		
+		position: fixed;		
 		background-color: rgba(255,255,255,0.0) !important;
 		border-color: rgba(0,0,0,0.0);
-		z-index: 1001;		
+		z-index: 1001;
+		margin-right: 17px;		
 		transition: background-color 0.4s; 
 		-webkit-transition: background-color 0.4s;
 		-moz-transition: background-color 0.4s;
 		-o-transition: background-color 0.4s;
-	}	
+	}
 	/*change color of text etc. in remaining top menu to white*/
 	.static, .ms-core-pageTitle, .ms-navedit-editLinksIcon, .ms-verticalAlignMiddle, #pageTitle a{
 		color: #FFFFFF !important;		
-	}	
+	}
+	.sidebarTextColor{
+		color: #444 !important;
+	}
+	/*fix the side menu when it hits the menu bar*/
+	.fixSideNav{
+		top: 91px; 		
+		position: fixed;
+	}
 	/*change background of content container to white*/
 	#contentRow{		
 		background-color: #ffffff;
@@ -61,9 +70,8 @@
 		font-weight: bold;
 	}
 	.mouseOver{
-		letter-spacing: 1px;
+		font-style: oblique;
 	}
-	
 	/*style the relative div that contains the branch image to allow the content under to scroll*/
 	#branchImageContainer{
 		position: relative;
@@ -81,38 +89,41 @@
 		background-position: center center;		
 		z-index: -1;
 	}
-	.whichUser{				
-	}
-	.currentUserClass{
-		color: #FFFFFF;
-	}	
 </style>
-
-
-<script type="text/javascript">	
-	
+<body>
+	<div class="topMenusSelector">
+		<label class="inputLabel">Check this to hide the top stuff...</label>
+		<input id="topMenuCheck" type="checkbox" checked>
+	</div>
+</body>
+<script type="text/javascript">
 	$(document).ready(function(){		
 		//yes, we're here.
 		console.log("Hi dude, this is cool.");
-		
 		//add branch image divs immediately above the contentrow container. this should really be done on the page rather than through script.
 		$("#contentRow").before('<div id="branchImageContainer"><div id="branchImage"></div></div>');
 		//add a landing div above search to place the current user's name
 		$("#DeltaPlaceHolderSearchArea").prepend('<div class="whichUser"></div>');
 		//add fixed div to menu as part of creating horizontal scrolling
 		$("#s4-titlerow").wrap('<div class="s4-titlerow-wrap"></div>');
-		
-		//$("#s4-titlerow").attr("style","width: " + ($("#s4-titlerow").width() + "px"));
-		
+		//assign unique class to side menu contents for teamsite layout
+		$(".ms-core-listMenu-verticalBox span").addClass("sidebarTextColor");
 		//detect scroll position of contentrow container relative to the top menu to condition class
 		$("#s4-workspace").on('scroll', function(){
 			if($("#contentRow").offset().top <225){				
 				$("#s4-titlerow").addClass("menuSolid");				
 			} else{
 				$("#s4-titlerow").removeClass("menuSolid");				
+			};					
+		});
+		//detect scroll position of sideNavBox relative to top menu to condition class
+		$("#s4-workspace").on('scroll', function(){
+			if($("#contentRow").offset().top < 91){
+				$("#sideNavBox").addClass("fixSideNav");
+			} else{
+				$("#sideNavBox").removeClass("fixSideNav");
 			};
 		});
-		
 		//detect hover of top menu links to condition class
 		$(".static.menu-item").hover(
 			function(){
@@ -121,9 +132,26 @@
 				$(this).removeClass("mouseOver");
 			}
 		);
+		if(document.getElementById("topMenuCheck").checked){
+			$("#suiteBarDelta").addClass("topBarHidden");
+			$("#globalNavBox").addClass("topBarHidden");
+			$("#s4-ribbonrow").addClass("topBarHidden");				
+		};
+		document.getElementById("topMenuCheck").addEventListener('click',function(f){
+			console.log(f);
+			if(f.target.checked == true){
+				$("#suiteBarDelta").addClass("topBarHidden");
+				$("#globalNavBox").addClass("topBarHidden");
+				$("#s4-ribbonrow").addClass("topBarHidden");				
+			} else{
+				$("#suiteBarDelta").removeClass("topBarHidden");
+				$("#globalNavBox").removeClass("topBarHidden");
+				$("#s4-ribbonrow").removeClass("topBarHidden");				
+			}
+		});
+		
 		//GET USER*********************************************************************************************************
-		var baseUri = _spPageContextInfo.webAbsoluteUrl;			
-			
+		var baseUri = _spPageContextInfo.webAbsoluteUrl;
 		function getRequestDigest(callback){
 			var _REQUESTDIGEST;
 			$.ajax({
@@ -143,7 +171,6 @@
 				}
 			});				
 		};
-			
 		function getUserName(callback){
 			$.ajax({
 				url : baseUri + "/_api/web/getuserbyid(" + _spPageContextInfo.userId + ")",
@@ -157,17 +184,18 @@
 					callback(data);
 				},
 				error : function(err){
-					console.log("Could not get e-mail - " + JSON.stringify(err));						
+					console.log("Could not get name - " + JSON.stringify(err));						
 				}
 			});			
-		};			
-			
+		};	
 		getRequestDigest(function(result){								
 			getUserName(function(result){				
-				var currentUser = result.d.Title;				
-				$(".whichUser").html('<span class="currentUserClass">' + currentUser + '</span>');
+				var currentUser = result.d.Title;
+				//find first name - logic: look for first instance of space character from right to left, take everything after it
+				var firstNameSpace = currentUser.lastIndexOf(" ");
+				var firstName = currentUser.substr(currentUser.length - (currentUser.length - firstNameSpace));				
+				$(".whichUser").html('<span class="currentUserClass" style="color:#FFFFFF">HELLO, ' + firstName + '!</span>');
 			});						
 		});		
-		
 	});
-</script>
+</script>-->
