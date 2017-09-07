@@ -74,10 +74,13 @@ var dataDisplayTemplateTitle = "ItemPicture3Lines";
 
  _#-->
         <div class="customProductsItem">
-            <!--#__#-->
-            <!--#__#-->
-            <!--#__#-->
-            <!--#__#-->
+            <!--#_if(!linkURL.isEmpty){_#-->
+            <!--#_if(!pictureMarkup.isEmpty){_#-->
+            <a class="customProductsImage" href="_#= linkURL =#_">
+                        _#= pictureMarkup =#_
+                    </a>
+            <!--#_}_#-->
+            <!--#_if(!line1.isEmpty){_#-->
             <!--#__#-->
             <!--#__#-->
             <!--#__#-->

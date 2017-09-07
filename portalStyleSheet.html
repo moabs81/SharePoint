@@ -92,8 +92,8 @@
 
 <body>
     <div class="topMenusSelector">
-        <label class="inputLabel">Check this to hide the top stuff...</label>
-        <input id="topMenuCheck" type="checkbox" checked>
+        <label class="inputLabel">Check this to unhide the top stuff...</label>
+        <input id="topMenuCheck" type="checkbox">
     </div>
 </body>
 <script type="text/javascript">
@@ -106,6 +106,12 @@
         $("#DeltaPlaceHolderSearchArea").prepend('<div class="whichUser"></div>');
         //add fixed div to menu as part of creating horizontal scrolling		
         $(".ms-core-listMenu-verticalBox span").addClass("sidebarTextColor");
+        //hide top menu bars, fix remaining menu bar, z-index menu bar to top of page via top style
+        $("#suiteBarDelta").addClass("topBarHidden");
+        $("#globalNavBox").addClass("topBarHidden");
+        $("#s4-ribbonrow").addClass("topBarHidden");
+        $("#s4-titlerow").removeAttr("style");
+        $(".ms-cui-ribbonTopBars").removeAttr("style");
         //detect scroll position of contentrow container relative to the top menu to condition class
         $("#s4-workspace").on('scroll', function() {
             if ($("#contentRow").offset().top < 225) {
@@ -126,19 +132,19 @@
         document.getElementById("topMenuCheck").addEventListener('click', function(f) {
             console.log(f);
             if (f.target.checked == true) {
-                $("#suiteBarDelta").addClass("topBarHidden");
-                $("#globalNavBox").addClass("topBarHidden");
-                $("#s4-ribbonrow").addClass("topBarHidden");
-                $("#s4-titlerow").addClass("menuSolid");
-                $("#s4-titlerow").removeAttr("style");
-                $(".ms-cui-ribbonTopBars").removeAttr("style");
-            } else {
                 $("#suiteBarDelta").removeClass("topBarHidden");
                 $("#globalNavBox").removeClass("topBarHidden");
                 $("#s4-ribbonrow").removeClass("topBarHidden");
                 $("#s4-titlerow").removeClass("menuSolid");
                 $("#s4-titlerow").attr("style", 'position:absolute; z-index: 99')
                 $(".ms-cui-ribbonTopBars").attr("style", "background-color: rgba(239, 239, 239, 0.80)");
+            } else {
+                $("#suiteBarDelta").addClass("topBarHidden");
+                $("#globalNavBox").addClass("topBarHidden");
+                $("#s4-ribbonrow").addClass("topBarHidden");
+                $("#s4-titlerow").addClass("menuSolid");
+                $("#s4-titlerow").removeAttr("style");
+                $(".ms-cui-ribbonTopBars").removeAttr("style");
             }
         });
 
@@ -196,21 +202,14 @@
                 var firstName = currentUser.substr(currentUser.length - (currentUser.length - firstNameSpace));
                 $(".whichUser").html('<span class="currentUserClass" style="color:#FFFFFF">HELLO, ' + firstName + '!</span>');
                 if (currentUser == "HENDRICKS, NICK") {
-                    $("#topMenuCheck").removeAttr('checked');
+                    $("#topMenuCheck").attr('checked', '');
                 } else if (currentUser == "FEATHERSTON, DEREK") {
-                    $("#topMenuCheck").removeAttr('checked');
+                    $("#topMenuCheck").attr('checked', '');
                 } else {
                     $(".topMenusSelector").attr('style', 'display:none');
                 };
                 //check on load to see if checkbox is already checked to reveal top menu bar
                 if (document.getElementById("topMenuCheck").checked) {
-                    $("#suiteBarDelta").addClass("topBarHidden");
-                    $("#globalNavBox").addClass("topBarHidden");
-                    $("#s4-ribbonrow").addClass("topBarHidden");
-                    $("#s4-titlerow").addClass("menuSolid");
-                    $("#s4-titlerow").removeAttr("style");
-                    $(".ms-cui-ribbonTopBars").removeAttr("style");
-                } else {
                     $("#suiteBarDelta").removeClass("topBarHidden");
                     $("#globalNavBox").removeClass("topBarHidden");
                     $("#s4-ribbonrow").removeClass("topBarHidden");
