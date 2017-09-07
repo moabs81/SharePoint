@@ -1,236 +1,211 @@
 <html>
 <style>
-	h1{		
-		color: #d2dce5 !important;
-	}
-	#suiteBarDelta{
-		display:none;
-	}
-	#unscheduledTable{						
-			margin: auto;
-			width: 80%;
-		}
-	#headers{
-		font-weight: bold;
-	}
-	.unscheduledTableTd{			
-		border-left: none;
-		border-right: none;
-		border-bottom: 1px solid #b6babb;
-		text-align: center;			
-	}
-	.unscheduledTableTr:hover{
-			color: #ffffff;
-			background-color:#4e8317;
-	}
-	#suiteBarLeft{
-		display:none;
-	}
-	#Ribbon-Container-TabRowRight{
-		display:none !important;
-	}
-	#suiteBar{
-		float: right;
-		width: auto;
-	}
-	#s4-ribbonrow{
-		z-index: -1;
-		position: static;
-	}
-	/*.ms-core-overlay{
-		background: transparent;
-	}*/
-	
-	#sideNavBox{		
-		z-index: 1;
-		margin-top: 100px;		
-		overflow: auto;
-	}
-	#contentBox{
-		z-index: 1;
-		padding-top: 100px;
-		overflow: auto;
-	}
-	.ewa-taskpane-toolbar-container{
-		z-index: 1 !important;
-	}
-	*/
-	
+    #unscheduledTable {
+        margin: auto;
+        width: 80%;
+    }
+    
+    #headers {
+        font-weight: bold;
+    }
+    
+    .unscheduledTableTd {
+        border-left: none;
+        border-right: none;
+        border-bottom: 1px solid #b6babb;
+        text-align: center;
+    }
+    
+    .unscheduledTableTr:hover {
+        color: #ffffff;
+        background-color: #4e8317;
+    }
 </style>
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
-	<div id="tableDiv">
-	<button type="button" id="refresh-me">refresh!</button>
-	<table id="unscheduledTable">		
-		<thead>
-			<tr id="headers">
-				<th class="unscheduledTableTd" id = "applicationCol">Application</th>
-				<th class="unscheduledTableTd" id = "outageTypeCol">Outage Type</th>
-				<th class="unscheduledTableTd" id = "statusCol">Status</th>
-				<th class="unscheduledTableTd" id = "outageLengthCol">Outage Length</th>		
-			</tr>		
-		</thead>
-		<tbody id="tableContent">
-		</tbody>
-	</table>		
-	</div>
-	<canvas id="outageChart1" width="400" height="400"></canvas>
-	<script type="text/javascript">	
-		$(document).ready(function(){
-		
-		var baseUri = _spPageContextInfo.webAbsoluteUrl;					
-		var targetListId;
-		var unscheduledIds = [];
-		var patchOsIds = [];
-		var patchAppIds = [];
-		var upgradeAppIds = [];
-		var scheduledIds = [];
-		var totals;
-		var totalsArr = [];
-		var percentsArr = [];
-		function getListId(callback){
-			var listTitle = "OutageList";						
-			$.ajax({
-				url : baseUri + "/_api/web/lists/getByTitle('" + listTitle + "')?$Select=Id",
-				contentType : "application/json",
-				method : "GET",
-				headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
-				success : function(data){
-					//console.log("-----");					
-					//console.log(data);
-					//console.log("-----");					
-					callback(data.d.Id);
-				},
-				error : function(err){
-					console.log("context error - " + JSON.stringify(err));						
-				}
-			});				
-		};
-		
-		function getItemIDs(callback){
-			var listTitle = "OutageList";			
-			$.ajax({
-				url : baseUri + "/_api/web/lists/getByTitle('" + listTitle + "')/Items",
-				contentType : "application/json",
-				method : "GET",
-				headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
-				success : function(data){
-					callback(data);
-				},
-				error : function(err){
-					console.log("context error - " + JSON.stringify(err));						
-				}
-			});				
-		};
-		
-		function getItemFields(callback){
-			for (var n=0; n<unscheduledIds.length; n++){
-			var completeURL = baseUri + "/_api/Web/Lists(guid'"+targetListId+"')/Items("+unscheduledIds[n]+")/FieldValuesAsText";
-			$.ajax({
-				url : completeURL,
-				contentType : "application/json",
-				method : "GET",
-				headers : {"Accept" : "application/json;odata=verbose","content-type" : "application/json;odata=verbose"},
-				success : function(data){
-					$("#tableContent").append("<tr class='unscheduledTableTr'><td class='unscheduledTableTd'>"+data.d.systemApplication+"</td><td class='unscheduledTableTd'>"+data.d.outageType+"</td><td class='unscheduledTableTd'>"+data.d.outageStatus+"</td><td class='unscheduledTableTd'>"+data.d.lengthOfOutage+"</td></tr>");
-					callback(data);
-				},
-				error : function(err){
-					console.log("context error - " + JSON.stringify(err));						
-				}
-			});
-			};
-		};
-		
-		function doAllTheThings(){
-			getListId(function(result){						
-				targetListId = result;			
-				getItemIDs(function(result){						
-					for(var n=0; n<result.d.results.length; n++){
-						if(result.d.results[n].outageType =="Unscheduled"){
-							unscheduledIds.push(result.d.results[n].Id);					
-						} else if (result.d.results[n].outageType =="Patch - OS"){
-							patchOsIds.push(result.d.results[n].Id);	
-						} else if(result.d.results[n].outageType =='Patch - Application'){
-							patchAppIds.push(result.d.results[n].Id);									 									 
-						} else if (result.d.results[n].outageType =='Upgrade - Application'){
-							upgradeAppIds.push(result.d.results[n].Id);
-						} else if (result.d.results[n].outageType =='Scheduled Maintenance'){
-							scheduledIds.push(result.d.results[n].Id);
-						}
-					};					
-					totalsArr.push(unscheduledIds.length);
-					totalsArr.push(patchOsIds.length);
-					totalsArr.push(patchAppIds.length);
-					totalsArr.push(upgradeAppIds.length);
-					totalsArr.push(scheduledIds.length);
-					var totals = unscheduledIds.length + patchOsIds.length + patchAppIds.length + upgradeAppIds.length + scheduledIds.length;
-					percentsArr.push(Math.round(unscheduledIds.length/totals*100).toFixed(2) + "%");
-					percentsArr.push(Math.round(patchOsIds.length/totals*100).toFixed(2) + "%");
-					percentsArr.push(Math.round(patchAppIds.length/totals*100).toFixed(2) + "%");
-					percentsArr.push(Math.round(upgradeAppIds.length/totals*100).toFixed(2) + "%");
-					percentsArr.push(Math.round(scheduledIds.length/totals*100).toFixed(2) + "%");					
-					//console.log(result);
-					getItemFields(function(result){
-						
-						var ctx = document.getElementById("outageChart1").getContext('2d');
-						var myChart = new Chart(ctx, {
-							type: 'doughnut',
-							data: {
-								labels: [
-									'unscheduled - ' + percentsArr[0],
-									'patch - OS - ' + percentsArr[1],
-									'patch - application - ' + percentsArr[2],
-									'upgrade application - ' + percentsArr[3],
-									'scheduled maintenance - ' + percentsArr[4]
-								],
-								datasets: [{
-									data: [										
-										totalsArr[0],
-										totalsArr[1],
-										totalsArr[2],
-										totalsArr[3],
-										totalsArr[4]										
-								],								
-								backgroundColor: [									
-									'rgba(255, 99, 132, 0.2)',
-									'rgba(54, 162, 235, 0.2)',
-									'rgba(255, 206, 86, 0.2)',
-									'rgba(75, 192, 192, 0.2)',
-									'rgba(153, 102, 255, 0.2)',
-								],
-								borderColor: [
-									'rgba(255,99,132,1)',
-									'rgba(54, 162, 235, 1)',
-									'rgba(255, 206, 86, 1)',
-									'rgba(75, 192, 192, 1)',
-									'rgba(153, 102, 255, 1)',
-								]
-							}]
-							},
-							options: {
-								animation:{
-									animateRotate: true
-								}
-							}
-						});						
-						//console.log(result);
-					});
-				});			
-			});
-		};
-		doAllTheThings();
-		/*setInterval(function(){
-			console.log("refresh!");
-			unscheduledIds = [];
-			$("#tableContent").html("");
-			doAllTheThings();
-		},30000); */
-		document.getElementById("refresh-me").addEventListener("click",function(e){
-			unscheduledIds = [];
-			$("#tableContent").html("");
-			doAllTheThings();
-		});
-		});		
-	</script>	
+<div id="tableDiv">
+    <button type="button" id="refresh-me">refresh!</button>
+    <table id="unscheduledTable">
+        <thead>
+            <tr id="headers">
+                <th class="unscheduledTableTd" id="applicationCol">Application</th>
+                <th class="unscheduledTableTd" id="outageTypeCol">Outage Type</th>
+                <th class="unscheduledTableTd" id="statusCol">Status</th>
+                <th class="unscheduledTableTd" id="outageLengthCol">Outage Length</th>
+            </tr>
+        </thead>
+        <tbody id="tableContent">
+        </tbody>
+    </table>
+</div>
+<canvas id="outageChart1" width="400" height="400"></canvas>
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        var baseUri = _spPageContextInfo.webAbsoluteUrl;
+        var targetListId;
+        var unscheduledIds = [];
+        var patchOsIds = [];
+        var patchAppIds = [];
+        var upgradeAppIds = [];
+        var scheduledIds = [];
+        var totals;
+        var totalsArr = [];
+        var percentsArr = [];
+
+        function getListId(callback) {
+            var listTitle = "OutageList";
+            $.ajax({
+                url: baseUri + "/_api/web/lists/getByTitle('" + listTitle + "')?$Select=Id",
+                contentType: "application/json",
+                method: "GET",
+                headers: {
+                    "Accept": "application/json;odata=verbose",
+                    "content-type": "application/json;odata=verbose"
+                },
+                success: function(data) {
+                    //console.log("-----");					
+                    //console.log(data);
+                    //console.log("-----");					
+                    callback(data.d.Id);
+                },
+                error: function(err) {
+                    console.log("context error - " + JSON.stringify(err));
+                }
+            });
+        };
+
+        function getItemIDs(callback) {
+            var listTitle = "OutageList";
+            $.ajax({
+                url: baseUri + "/_api/web/lists/getByTitle('" + listTitle + "')/Items",
+                contentType: "application/json",
+                method: "GET",
+                headers: {
+                    "Accept": "application/json;odata=verbose",
+                    "content-type": "application/json;odata=verbose"
+                },
+                success: function(data) {
+                    callback(data);
+                },
+                error: function(err) {
+                    console.log("context error - " + JSON.stringify(err));
+                }
+            });
+        };
+
+        function getItemFields(callback) {
+            for (var n = 0; n < unscheduledIds.length; n++) {
+                var completeURL = baseUri + "/_api/Web/Lists(guid'" + targetListId + "')/Items(" + unscheduledIds[n] + ")/FieldValuesAsText";
+                $.ajax({
+                    url: completeURL,
+                    contentType: "application/json",
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json;odata=verbose",
+                        "content-type": "application/json;odata=verbose"
+                    },
+                    success: function(data) {
+                        $("#tableContent").append("<tr class='unscheduledTableTr'><td class='unscheduledTableTd'>" + data.d.systemApplication + "</td><td class='unscheduledTableTd'>" + data.d.outageType + "</td><td class='unscheduledTableTd'>" + data.d.outageStatus + "</td><td class='unscheduledTableTd'>" + data.d.lengthOfOutage + "</td></tr>");
+                        callback(data);
+                    },
+                    error: function(err) {
+                        console.log("context error - " + JSON.stringify(err));
+                    }
+                });
+            };
+        };
+
+        function doAllTheThings() {
+            getListId(function(result) {
+                targetListId = result;
+                getItemIDs(function(result) {
+                    for (var n = 0; n < result.d.results.length; n++) {
+                        if (result.d.results[n].outageType == "Unscheduled") {
+                            unscheduledIds.push(result.d.results[n].Id);
+                        } else if (result.d.results[n].outageType == "Patch - OS") {
+                            patchOsIds.push(result.d.results[n].Id);
+                        } else if (result.d.results[n].outageType == 'Patch - Application') {
+                            patchAppIds.push(result.d.results[n].Id);
+                        } else if (result.d.results[n].outageType == 'Upgrade - Application') {
+                            upgradeAppIds.push(result.d.results[n].Id);
+                        } else if (result.d.results[n].outageType == 'Scheduled Maintenance') {
+                            scheduledIds.push(result.d.results[n].Id);
+                        }
+                    };
+                    totalsArr.push(unscheduledIds.length);
+                    totalsArr.push(patchOsIds.length);
+                    totalsArr.push(patchAppIds.length);
+                    totalsArr.push(upgradeAppIds.length);
+                    totalsArr.push(scheduledIds.length);
+                    var totals = unscheduledIds.length + patchOsIds.length + patchAppIds.length + upgradeAppIds.length + scheduledIds.length;
+                    percentsArr.push(Math.round(unscheduledIds.length / totals * 100).toFixed(2) + "%");
+                    percentsArr.push(Math.round(patchOsIds.length / totals * 100).toFixed(2) + "%");
+                    percentsArr.push(Math.round(patchAppIds.length / totals * 100).toFixed(2) + "%");
+                    percentsArr.push(Math.round(upgradeAppIds.length / totals * 100).toFixed(2) + "%");
+                    percentsArr.push(Math.round(scheduledIds.length / totals * 100).toFixed(2) + "%");
+                    //console.log(result);
+                    getItemFields(function(result) {
+
+                        var ctx = document.getElementById("outageChart1").getContext('2d');
+                        var myChart = new Chart(ctx, {
+                            type: 'doughnut',
+                            data: {
+                                labels: [
+                                    'unscheduled - ' + percentsArr[0],
+                                    'patch - OS - ' + percentsArr[1],
+                                    'patch - application - ' + percentsArr[2],
+                                    'upgrade application - ' + percentsArr[3],
+                                    'scheduled maintenance - ' + percentsArr[4]
+                                ],
+                                datasets: [{
+                                    data: [
+                                        totalsArr[0],
+                                        totalsArr[1],
+                                        totalsArr[2],
+                                        totalsArr[3],
+                                        totalsArr[4]
+                                    ],
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(255, 206, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)',
+                                        'rgba(153, 102, 255, 0.2)',
+                                    ],
+                                    borderColor: [
+                                        'rgba(255,99,132,1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)',
+                                        'rgba(153, 102, 255, 1)',
+                                    ]
+                                }]
+                            },
+                            options: {
+                                animation: {
+                                    animateRotate: true
+                                }
+                            }
+                        });
+                        //console.log(result);
+                    });
+                });
+            });
+        };
+        doAllTheThings();
+        /*setInterval(function(){
+        	console.log("refresh!");
+        	unscheduledIds = [];
+        	$("#tableContent").html("");
+        	doAllTheThings();
+        },30000); */
+        document.getElementById("refresh-me").addEventListener("click", function(e) {
+            unscheduledIds = [];
+            $("#tableContent").html("");
+            doAllTheThings();
+        });
+    });
+</script>
+
 </html>

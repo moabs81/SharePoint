@@ -1,17 +1,9 @@
 <!DOCTYPE html>
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<style id="allCustomStyles">
-    /*make top menus invisible
-	#suiteBarDelta, #globalNavBox{
-		display: none;		
-	}*/
-    
+<script type="text/javascript" src="https://tsps.ncsecu.local/Style%20Library/jQueryLocal/jQuery-3.1.1.min.js"></script>
+<style>
     .topBarHidden {
         display: none;
     }
-    /*#suiteBarTop{
-		height: 0px !important;
-	}*/
     /*hide bottom border of last menu*/
     
     .ms-cui-topBar2 {
@@ -19,22 +11,14 @@
     }
     /*change color of text etc. in remaining top menu to white*/
     
-    .static,
+    .ms-core-listMenu-horizontalBox li.static>.ms-core-listMenu-item,
     .ms-core-pageTitle,
-    .ms-navedit-editLinksIcon,
-    .ms-verticalAlignMiddle,
-    #pageTitle a {
+    .ms-core-pageTitle a,
+    .ms-navedit-editLinksText>span>.ms-metadata,
+    .ms-srch-sb>input {
         color: #FFFFFF !important;
     }
-    
-    .sidebarTextColor {
-        color: #444 !important;
-    }
-    /*change color of input box text and input box border to white*/
-    
-    input {
-        color: #FFFFFF !important;
-    }
+    /*change border of searchbox to white*/
     
     .ms-srch-sb {
         border-color: #FFFFFF !important;
@@ -52,6 +36,7 @@
     /*style the remaining menu and add transition to menuSolid*/
     
     #s4-titlerow {
+        display: block;
         position: fixed;
         background-color: rgba(255, 255, 255, 0.0) !important;
         border-color: rgba(0, 0, 0, 0.0);
@@ -137,21 +122,6 @@
                 $("#sideNavBox").removeClass("fixSideNav");
             };
         });
-        //detect hover of top menu links to condition class
-        //$(".static.menu-item").hover(
-        //   function() {
-        //      $(this).addClass("mouseOver");
-        // },
-        //   function() {
-        //      $(this).removeClass("mouseOver");
-        // }
-        //);
-        //check on load to see if checkbox is already checked to reveal top menu bar
-        if (document.getElementById("topMenuCheck").checked) {
-            $("#suiteBarDelta").addClass("topBarHidden");
-            $("#globalNavBox").addClass("topBarHidden");
-            $("#s4-ribbonrow").addClass("topBarHidden");
-        };
         //detect check of topMenuCheck to hide or show top menu bar
         document.getElementById("topMenuCheck").addEventListener('click', function(f) {
             console.log(f);
@@ -159,10 +129,16 @@
                 $("#suiteBarDelta").addClass("topBarHidden");
                 $("#globalNavBox").addClass("topBarHidden");
                 $("#s4-ribbonrow").addClass("topBarHidden");
+                $("#s4-titlerow").addClass("menuSolid");
+                $("#s4-titlerow").removeAttr("style");
+                $(".ms-cui-ribbonTopBars").removeAttr("style");
             } else {
                 $("#suiteBarDelta").removeClass("topBarHidden");
                 $("#globalNavBox").removeClass("topBarHidden");
                 $("#s4-ribbonrow").removeClass("topBarHidden");
+                $("#s4-titlerow").removeClass("menuSolid");
+                $("#s4-titlerow").attr("style", 'position:absolute; z-index: 99')
+                $(".ms-cui-ribbonTopBars").attr("style", "background-color: rgba(239, 239, 239, 0.80)");
             }
         });
 
@@ -214,11 +190,35 @@
         getRequestDigest(function(result) {
             getUserName(function(result) {
                 var currentUser = result.d.Title;
+                console.log(currentUser);
                 //find first name - logic: look for first instance of space character from right to left, take everything after it
                 var firstNameSpace = currentUser.lastIndexOf(" ");
                 var firstName = currentUser.substr(currentUser.length - (currentUser.length - firstNameSpace));
                 $(".whichUser").html('<span class="currentUserClass" style="color:#FFFFFF">HELLO, ' + firstName + '!</span>');
+                if (currentUser == "HENDRICKS, NICK") {
+                    $("#topMenuCheck").removeAttr('checked');
+                } else if (currentUser == "FEATHERSTON, DEREK") {
+                    $("#topMenuCheck").removeAttr('checked');
+                } else {
+                    $(".topMenusSelector").attr('style', 'display:none');
+                };
+                //check on load to see if checkbox is already checked to reveal top menu bar
+                if (document.getElementById("topMenuCheck").checked) {
+                    $("#suiteBarDelta").addClass("topBarHidden");
+                    $("#globalNavBox").addClass("topBarHidden");
+                    $("#s4-ribbonrow").addClass("topBarHidden");
+                    $("#s4-titlerow").addClass("menuSolid");
+                    $("#s4-titlerow").removeAttr("style");
+                    $(".ms-cui-ribbonTopBars").removeAttr("style");
+                } else {
+                    $("#suiteBarDelta").removeClass("topBarHidden");
+                    $("#globalNavBox").removeClass("topBarHidden");
+                    $("#s4-ribbonrow").removeClass("topBarHidden");
+                    $("#s4-titlerow").removeClass("menuSolid");
+                    $("#s4-titlerow").attr("style", 'position:absolute; z-index: 99')
+                    $(".ms-cui-ribbonTopBars").attr("style", "background-color: rgba(239, 239, 239, 0.80)");
+                };
             });
         });
     });
-</script>-->
+</script>

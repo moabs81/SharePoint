@@ -1,57 +1,51 @@
-/*make top menus invisible
-	#suiteBarDelta, #globalNavBox{
-		display: none;		
-	}*/
-	/*#suiteBarTop{
-		height: 0px !important;
-	}*/
-	/*hide bottom border of last menu*/
-	.ms-cui-topBar2{		
-		border-bottom: 0px;
-	}
-	/*.ms-core-overlay is the opaque background under the content. hide this*/
-	#globalNavBox, .ms-core-overlay{		
-		background-color: rgba(255,255,255,0.0) !important;
-	}
-	#s4-titlerow{		
-		position: fixed;		
-		background-color: rgba(59,60,64,1.0) !important;
-		border-color: rgba(0,0,0,0.0);
-		z-index: 1001;
-		margin-right: 17px;		
-	}
-	/*change color of text etc. in remaining top menu to white*/
-	.static, .ms-core-pageTitle, .ms-navedit-editLinksIcon, .ms-verticalAlignMiddle, #pageTitle a{
-		color: #FFFFFF !important;		
-	}
-	.sidebarTextColor{
-		color: #444 !important;
-	}
-	/*fix the side menu when it hits the menu bar
-	.fixSideNav{
-		top: 91px; 		
-		position: fixed;
-	}*/
-	/*change background of content container to white*/
-	#contentRow{		
-		padding-top: 100px;
-		background-color: #ffffff;
-	}		
-	/*change color of input box text and input box border to white
-	input{
-		color: #FFFFFF !important;
-	}*/
-	.ms-srch-sb{
-		border-color: #FFFFFF !important;
-	}
-	/* weight the text of the current page in the menu*/
-	.selected{
-		font-weight: bold;
-	}	
-	.static.menu-item:hover{		
-		text-decoration: underline;
-	}
-	
-	/*#O365_NavHeader,#globalNavBox,#s4-ribbonrow{
-		background-color: rgba(59,60,64,1.0) !important;
-	}*/
+/*change color of text etc. in remaining top menu to white*/
+
+.ms-core-listMenu-horizontalBox li.static>.ms-core-listMenu-item,
+.ms-core-pageTitle,
+.ms-core-pageTitle a,
+.ms-navedit-editLinksText>span>.ms-metadata,
+.ms-srch-sb>input {
+    color: #FFFFFF !important;
+}
+
+
+/*change border of searchbox to white*/
+
+.ms-srch-sb {
+    border-color: #FFFFFF !important;
+}
+
+
+/* weight the text of the current page in the menu*/
+
+.selected {
+    font-weight: bold;
+}
+
+.static.menu-item:hover {
+    text-decoration: underline;
+}
+
+
+/*.ms-core-overlay is the opaque background under the content. hide this*/
+
+#globalNavBox,
+.ms-core-overlay {
+    background-color: rgba(255, 255, 255, 0.0) !important;
+}
+
+#s4-titlerow {
+    position: fixed;
+    background-color: rgba(59, 60, 64, 1.0) !important;
+    border-color: rgba(0, 0, 0, 0.0);
+    z-index: 1001;
+    margin-right: 17px;
+}
+
+
+/*change background of content container to white*/
+
+#contentRow {
+    padding-top: 100px;
+    background-color: #ffffff;
+}
